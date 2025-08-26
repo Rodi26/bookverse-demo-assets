@@ -19,3 +19,39 @@ This repository is part of the JFrog AppTrust BookVerse demo. It serves as the s
 
 ---
 This repository is intentionally minimal and will be populated with demo collateral as needed.
+
+## ArgoCD bootstrap
+
+Bootstrap ArgoCD with Helm repository credentials and Docker registry pull secrets:
+
+1) Edit `gitops/bootstrap/argocd-helm-repos.yaml` and set credentials for:
+   - `https://evidencetrial.jfrog.io/artifactory/bookverse-helm-helm-internal-local`
+   - `https://evidencetrial.jfrog.io/artifactory/bookverse-helm-helm-release-local`
+
+2) Create a Docker config JSON for `evidencetrial.jfrog.io` and base64 it:
+
+```
+export JF_USER=<user>
+export JF_PASS=<password-or-token>
+cat > /tmp/.dockerconfigjson <<EOF
+{
+  "auths": {
+    "evidencetrial.jfrog.io": {
+      "auth": "$(printf "%s:%s" "$JF_USER" "$JF_PASS" | base64 -w 0)"
+    }
+  }
+}
+EOF
+base64 -w 0 /tmp/.dockerconfigjson > /tmp/.dockerconfigjson.b64
+```
+
+3) Replace `PLACEHOLDER_BASE64_DOCKERCONFIG` in `gitops/bootstrap/docker-pull-secrets.yaml` with the contents of `/tmp/.dockerconfigjson.b64`.
+
+4) Apply the bootstrap resources (requires the `argocd` namespace and the env namespaces to exist):
+
+```
+kubectl apply -f gitops/bootstrap/argocd-helm-repos.yaml
+kubectl apply -f gitops/bootstrap/docker-pull-secrets.yaml
+```
+
+ArgoCD will then be able to fetch the platform Helm chart from JFrog and Kubernetes will be able to pull images from the JFrog Docker registry.
