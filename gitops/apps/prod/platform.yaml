@@ -1,3 +1,7 @@
+# BookVerse Demo — PROD-only Argo CD Application
+# Deploys only when AppTrust marks a Platform version as "Recommended for PROD".
+# CI/CD updates charts/platform/values-prod.yaml to that version; merge triggers reconcile.
+# Argo CD auto-syncs into namespace bookverse-prod.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
