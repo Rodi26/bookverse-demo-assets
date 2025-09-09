@@ -36,7 +36,7 @@ This document outlines a demo‑focused GitOps strategy, optimized for simplicit
 - Configure Argo CD repo credentials to JFrog Helm repos via `gitops/bootstrap/argocd-helm-repos.yaml`.
 - Configure `kubernetes.io/dockerconfigjson` secrets per namespace via `gitops/bootstrap/docker-pull-secrets.yaml`.
 - Policies (placeholder, not implemented in demo):
-  - Images should come from `evidencetrial.jfrog.io` with immutable tags.
+  - Images should come from `apptrustswampupc.jfrog.io` with immutable tags.
   - Prefer signed images and chart provenance files.
   - Avoid `latest` tags.
 

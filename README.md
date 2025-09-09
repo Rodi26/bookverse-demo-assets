@@ -25,10 +25,10 @@ This repository is intentionally minimal and will be populated with demo collate
 Bootstrap ArgoCD with Helm repository credentials and Docker registry pull secrets:
 
 1) Edit `gitops/bootstrap/argocd-helm-repos.yaml` and set credentials for:
-   - `https://evidencetrial.jfrog.io/artifactory/bookverse-helm-internal-helm-nonprod-local`
-   - `https://evidencetrial.jfrog.io/artifactory/bookverse-helm-internal-helm-release-local`
+   - `https://apptrustswampupc.jfrog.io/artifactory/bookverse-helm-internal-helm-nonprod-local`
+   - `https://apptrustswampupc.jfrog.io/artifactory/bookverse-helm-internal-helm-release-local`
 
-2) Create a Docker config JSON for `evidencetrial.jfrog.io` and base64 it:
+2) Create a Docker config JSON for `apptrustswampupc.jfrog.io` and base64 it:
 
 ```
 export JF_USER=<user>
@@ -36,7 +36,7 @@ export JF_PASS=<password-or-token>
 cat > /tmp/.dockerconfigjson <<EOF
 {
   "auths": {
-    "evidencetrial.jfrog.io": {
+    "apptrustswampupc.jfrog.io": {
       "auth": "$(printf "%s:%s" "$JF_USER" "$JF_PASS" | base64 -w 0)"
     }
   }
