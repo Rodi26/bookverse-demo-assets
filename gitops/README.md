@@ -4,7 +4,7 @@ This demo uses Argo CD to deploy only to PROD. Deployments occur when AppTrust d
 
 ### Flow
 1. AppTrust marks a Platform version as Recommended for PROD.
-2. CI/CD opens a PR in `bookverse-helm` to update `charts/platform/values-prod.yaml` (chart version and/or image digest).
+2. CI/CD opens a PR in `bookverse-helm` to update `charts/platform/values.yaml` (chart version and/or image digest).
 3. Merge PR → Argo CD auto-syncs `apps/prod/platform.yaml` to the `bookverse-prod` namespace.
 
 ### Bootstrap (PROD only)

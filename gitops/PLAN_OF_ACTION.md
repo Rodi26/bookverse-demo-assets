@@ -11,14 +11,14 @@ This document outlines a demo‑focused GitOps strategy, optimized for simplicit
 
 ### Repos and Responsibilities
 - **bookverse-demo-assets (this repo)**: GitOps control-plane repo for Argo CD Projects, Applications, bootstrap, and environment-level secrets/policies.
-- **bookverse-helm**: Application Helm charts and values per environment (`charts/platform` with `values-*.yaml`).
+- **bookverse-helm**: Application Helm charts using a single values file (`charts/platform/values.yaml`).
 - **service repos**: Application source; CI builds images and pushes charts to Artifactory, then opens PRs updating Helm chart versions.
 - **AppTrust**: Source of truth for “Recommended Platform Version” in PROD; emits events used to update Helm chart references.
 
 ### High-level Flow
 1. Bootstrap cluster with `gitops/bootstrap/*` to configure Argo CD repository credentials for Helm repos and docker pull secrets in the `bookverse-prod` namespace.
 2. Apply `gitops/projects/bookverse-prod.yaml` to define the PROD `AppProject`.
-3. Create `gitops/apps/prod/platform.yaml` Argo CD `Application` pointing to `bookverse-helm/charts/platform` with `values-prod.yaml`.
+3. Create `gitops/apps/prod/platform.yaml` Argo CD `Application` pointing to `bookverse-helm/charts/platform` with the default `values.yaml`.
 4. AppTrust designates a “Recommended Platform Version” for PROD; CI/CD opens a PR to update the chart version/image digest referenced by `values-prod.yaml`.
 5. Merge PR → Argo CD reconciles and deploys to the `bookverse-prod` namespace.
 
@@ -28,8 +28,8 @@ This document outlines a demo‑focused GitOps strategy, optimized for simplicit
 
 ### Branching and Versioning Model
 - `bookverse-helm` uses semantic versioning for the `platform` chart.
-- PROD tracks `main` with `values-prod.yaml`. A change is permitted only when AppTrust emits a “Recommended Platform Version” event for PROD.
-- CI opens a PR to update `values-prod.yaml` chart version and/or image digest to the recommended version. Upon merge, Argo CD reconciles.
+- PROD tracks `main` with `values.yaml`. A change is permitted only when AppTrust emits a “Recommended Platform Version” event for PROD.
+- CI opens a PR to update `values.yaml` chart version and/or image digest to the recommended version. Upon merge, Argo CD reconciles.
 - Other environments are out of scope for this demo.
 
 ### Artifact Trust and Policy Controls
@@ -51,7 +51,7 @@ This document outlines a demo‑focused GitOps strategy, optimized for simplicit
 1. Reconciliation loop per Application (PROD only in demo):
    - Poll source (Git for charts definitions + Helm repo for charts) at interval `T`.
    - If `targetRevision` and Helm chart version resolve to a new digest:
-     - Fetch manifests via `helm template` with `values-<env>.yaml`.
+     - Fetch manifests via `helm template` with `values.yaml`.
      - Run diff with live cluster objects.
      - If drift detected and auto-sync enabled, apply changes.
 2. Drift handling algorithm (PROD only):
@@ -73,7 +73,7 @@ This document outlines a demo‑focused GitOps strategy, optimized for simplicit
 ### Promotion Logic
 1. CI builds image `repo/image@sha256:<digest>`, publishes to JFrog.
 2. AppTrust marks a Platform release as “Recommended for PROD”.
-3. CI/CD opens a PR against `bookverse-helm` to update `values-prod.yaml` to the recommended chart/image version.
+3. CI/CD opens a PR against `bookverse-helm` to update `values.yaml` to the recommended chart/image version.
 4. Merge PR → Argo CD deploys to PROD.
 
 ### Rollout Strategies
