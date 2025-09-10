@@ -1,3 +1,6 @@
+## Deployment is driven by AppTrust platform release_complete webhook → GitHub Actions.
+## The workflow fetches platform version content, validates 'latest', updates per-service
+## image tags in charts/platform/values.yaml, and pushes directly to main; Argo CD auto-syncs.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

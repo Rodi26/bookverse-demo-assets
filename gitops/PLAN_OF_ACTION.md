@@ -19,7 +19,7 @@ This document outlines a demo‑focused GitOps strategy, optimized for simplicit
 1. Bootstrap cluster with `gitops/bootstrap/*` to configure Argo CD repository credentials for Helm repos and docker pull secrets in the `bookverse-prod` namespace.
 2. Apply `gitops/projects/bookverse-prod.yaml` to define the PROD `AppProject`.
 3. Create `gitops/apps/prod/platform.yaml` Argo CD `Application` pointing to `bookverse-helm/charts/platform` with the default `values.yaml`.
-4. AppTrust designates a “Recommended Platform Version” for PROD; CI/CD opens a PR to update the chart version/image digest referenced by `values-prod.yaml`.
+4. AppTrust designates a “Recommended Platform Version” for PROD; CI/CD opens a PR to update the chart version/image digest referenced by `values.yaml`.
 5. Merge PR → Argo CD reconciles and deploys to the `bookverse-prod` namespace.
 
 ### Environment Strategy (Demo Scope)
