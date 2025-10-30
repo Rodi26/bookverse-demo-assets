@@ -10,9 +10,12 @@ metadata:
 spec:
   project: bookverse-prod
   source:
-    repoURL: https://github.com/yonatanp-jfrog/bookverse-helm.git
+    repoURL: https://github.com/Rodi26/bookverse-helm.git
     targetRevision: main
     path: charts/platform
+    helm:
+      valueFiles:
+        - ../../gke-deployment/values-gke.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: bookverse-prod
