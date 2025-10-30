@@ -17,6 +17,10 @@ metadata:
     
     # Google-managed certificate (let it auto-create the GCP SSL cert)
     networking.gke.io/managed-certificates: argocd-cert
+    
+    # Force HTTPS redirect
+    kubernetes.io/ingress.allow-http: "false"
+    networking.gke.io/v1beta1.FrontendConfig: argocd-frontend-config
   
   labels:
     app: argocd
@@ -26,8 +30,12 @@ metadata:
 spec:
   ingressClassName: gce
   
-  # TLS is handled by Google-Managed Certificate (no manual secret needed)
-  # The annotation networking.gke.io/managed-certificates handles SSL
+  # TLS configuration - enables HTTPS on the load balancer
+  # Certificate is provided by Google-Managed Certificate (argocd-cert)
+  tls:
+    - hosts:
+        - argocd.rodolphef.org
+      # No secretName needed - Google-Managed Certificate handles it
   
   # Routing rules
   rules:

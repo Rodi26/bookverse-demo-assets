@@ -1,9 +1,0 @@
-# ArgoCD Namespace for GKE Deployment
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: argocd
-  labels:
-    app: argocd
-    managed-by: gke
-
