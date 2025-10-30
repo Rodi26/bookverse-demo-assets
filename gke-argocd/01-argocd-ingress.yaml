@@ -15,11 +15,8 @@ metadata:
     ingress.kubernetes.io/proxy-read-timeout: "600"
     ingress.kubernetes.io/proxy-send-timeout: "600"
     
-    # Google-managed certificate
+    # Google-managed certificate (let it auto-create the GCP SSL cert)
     networking.gke.io/managed-certificates: argocd-cert
-    
-    # Force HTTPS redirect
-    ingress.gcp.kubernetes.io/pre-shared-cert: "argocd-cert"
   
   labels:
     app: argocd
@@ -29,11 +26,8 @@ metadata:
 spec:
   ingressClassName: gce
   
-  # TLS configuration
-  tls:
-    - hosts:
-        - argocd.rodolphef.org
-      secretName: argocd-server-tls
+  # TLS is handled by Google-Managed Certificate (no manual secret needed)
+  # The annotation networking.gke.io/managed-certificates handles SSL
   
   # Routing rules
   rules:
@@ -47,5 +41,5 @@ spec:
               service:
                 name: argocd-server
                 port:
-                  name: https
+                  name: http
 
