@@ -1,0 +1,62 @@
+# ArgoCD Helm Values for GKE Deployment
+# ========================================
+# Use with: helm install argocd argo/argo-cd -f argocd-values-gke.yaml
+
+global:
+  domain: argocd.rodolphef.org
+
+server:
+  # External access configuration
+  service:
+    type: NodePort  # NodePort for GKE Ingress
+    
+  # Ingress configuration (disabled as we use custom ingress)
+  ingress:
+    enabled: false  # We use custom GKE ingress (see 01-argocd-ingress.yaml)
+  
+  # ArgoCD server configuration
+  config:
+    # Enable insecure mode when behind GKE Load Balancer
+    # The Load Balancer handles TLS termination
+    server.insecure: "true"
+    
+    # Repository credentials
+    repositories: |
+      - url: https://rodolphefplus.jfrog.io/artifactory/bookverse-helm-helm-internal-local
+        name: bookverse-helm-internal
+        type: helm
+        username: $JFROG_USERNAME
+        password: $JFROG_PASSWORD
+      - url: https://rodolphefplus.jfrog.io/artifactory/bookverse-helm-helm-release-local
+        name: bookverse-helm-release
+        type: helm
+        username: $JFROG_USERNAME
+        password: $JFROG_PASSWORD
+      - url: https://github.com/Rodi26/bookverse-demo-assets.git
+        name: bookverse-gitops
+        type: git
+  
+  # Extra arguments for server
+  extraArgs:
+    - --insecure
+
+# Redis configuration
+redis:
+  enabled: true
+
+# Repository server configuration
+repoServer:
+  replicas: 2
+
+# Application controller configuration
+controller:
+  replicas: 1
+
+# Notifications controller
+notifications:
+  enabled: true
+
+# ApplicationSet controller
+applicationSet:
+  enabled: true
+

@@ -1,0 +1,51 @@
+# ArgoCD Ingress for GKE with External Access
+# Based on the working Artifactory example
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+  annotations:
+    # GKE-specific annotations (similar to Artifactory example)
+    kubernetes.io/ingress.class: gce
+    kubernetes.io/ingress.global-static-ip-name: argocd-ip
+    
+    # Proxy settings for ArgoCD UI and gRPC
+    ingress.kubernetes.io/proxy-body-size: "0"
+    ingress.kubernetes.io/proxy-read-timeout: "600"
+    ingress.kubernetes.io/proxy-send-timeout: "600"
+    
+    # Google-managed certificate
+    networking.gke.io/managed-certificates: argocd-cert
+    
+    # Force HTTPS redirect
+    ingress.gcp.kubernetes.io/pre-shared-cert: "argocd-cert"
+  
+  labels:
+    app: argocd
+    component: server
+    traffic-type: external
+
+spec:
+  ingressClassName: gce
+  
+  # TLS configuration
+  tls:
+    - hosts:
+        - argocd.rodolphef.org
+      secretName: argocd-server-tls
+  
+  # Routing rules
+  rules:
+    - host: argocd.rodolphef.org
+      http:
+        paths:
+          # ArgoCD Server UI and API
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  name: https
+

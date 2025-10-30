@@ -1,0 +1,13 @@
+# Google-Managed SSL Certificate for ArgoCD
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: argocd-cert
+  namespace: argocd
+  labels:
+    app: argocd
+    component: certificate
+spec:
+  domains:
+    - argocd.rodolphef.org
+
